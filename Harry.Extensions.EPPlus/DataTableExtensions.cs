@@ -24,12 +24,17 @@ namespace Harry.Extensions.EPPlus
         {
             Check.NotNull(dt, nameof(dt));
 
-            using (var stream = new MemoryStream())
+            using (var ms = new MemoryStream())
             using (ExcelPackage doc = new ExcelPackage())
             {
                 doc.LoadFromDataTable(dt, dtOptionsAction);
-                doc.SaveAs(stream);
-                return stream.GetBuffer();
+                doc.SaveAs(ms);
+
+                ms.Position = 0;
+                byte[] buffer = new byte[ms.Length];
+                ms.Read(buffer, 0, (int)ms.Length);
+
+                return buffer;
             }
         }
     }

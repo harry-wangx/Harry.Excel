@@ -29,20 +29,32 @@ namespace Harry.Extensions.EPPlus
             //return;
 
             int rownum = 0;
-            ExcelWorksheet currentSheet = null;
             int currentSheetIndex = 0;
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                if (i % dtOptions.PageSize == 0)
-                {
-                    //写入表头
-                    rownum = 1;
-                    currentSheet = createSheet(doc, dt, ref rownum, $"{dt.TableName}({(++currentSheetIndex).ToString()})", dtOptions);
-                }
+            ExcelWorksheet currentSheet = null;
 
-                //写入数据行
-                writeRow(currentSheet, dt.Rows[i], rownum++, dtOptions);
+            if (dt.Rows != null && dt.Rows.Count > 0)
+            {
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    if (i % dtOptions.PageSize == 0)
+                    {
+                        //写入表头
+                        rownum = 1;
+                        currentSheet = createSheet(doc, dt, ref rownum, $"{dt.TableName}({(++currentSheetIndex).ToString()})", dtOptions);
+                    }
+
+                    //写入数据行
+                    writeRow(currentSheet, dt.Rows[i], rownum++, dtOptions);
+                }
             }
+            else
+            {
+                //无数据，写个表头然后退出
+                //写入表头
+                rownum = 1;
+                currentSheet = createSheet(doc, dt, ref rownum, $"{dt.TableName}({(++currentSheetIndex).ToString()})", dtOptions);
+            }
+
         }
 
         public static string GetValidSheetName(this ExcelPackage doc, string name)
@@ -117,7 +129,7 @@ namespace Harry.Extensions.EPPlus
                 header.Value = column.Caption;
                 var excelColumn = worksheet.Column(column.Ordinal + 1);
 
-                dtOptions.HeaderCellAction?.Invoke(column,excelColumn, header);
+                dtOptions.HeaderCellAction?.Invoke(column, excelColumn, header);
             }
             //var fieldNameCells = worksheet.Cells[rownum, 1, rownum, dt.Columns.Count];
             //dtOptions.HeaderStyleAction?.Invoke(fieldNameCells.Style);
@@ -149,7 +161,11 @@ namespace Harry.Extensions.EPPlus
             foreach (DataColumn column in dr.Table.Columns)
             {
                 var cell = sheet.Cells[rownum, column.Ordinal + 1];
-                cell.Value = dr[column];
+                var value = dr[column];
+                if (value != null && value != DBNull.Value)
+                {
+                    cell.Value = dr[column];
+                }
 
                 ValidateCellStyle(cell, column.DataType);
 
