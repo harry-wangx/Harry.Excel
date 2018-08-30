@@ -20,22 +20,11 @@ namespace Harry.Extensions.EPPlus
                 doc.SaveAs(stream);
             }
         }
-        public static byte[] WriteToExcel(this DataTable dt, Action<DataTableOptions> dtOptionsAction = null)
+        public static ExcelPackage WriteToExcel(this DataTable dt, Action<DataTableOptions> dtOptionsAction = null)
         {
             Check.NotNull(dt, nameof(dt));
 
-            using (var ms = new MemoryStream())
-            using (ExcelPackage doc = new ExcelPackage())
-            {
-                doc.LoadFromDataTable(dt, dtOptionsAction);
-                doc.SaveAs(ms);
-
-                ms.Position = 0;
-                byte[] buffer = new byte[ms.Length];
-                ms.Read(buffer, 0, (int)ms.Length);
-
-                return buffer;
-            }
+            return new ExcelPackage().LoadFromDataTable(dt, dtOptionsAction);
         }
     }
 }

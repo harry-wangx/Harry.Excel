@@ -29,12 +29,12 @@ namespace Harry.Extensions.EPPlus.Test
         public void DatableToExcelWithMem()
         {
             string path = System.AppDomain.CurrentDomain.BaseDirectory;
-            path = System.IO.Path.Combine(path, "test_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_DataTable.xlsx");
+            path = System.IO.Path.Combine(path, "test_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_DataTable_withMem.xlsx");
             Console.WriteLine(path);
 
             using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
-                var data = Helper.GetDataTable().WriteToExcel(SetOptions);
+                var data = Helper.GetDataTable().WriteToExcel(SetOptions).GetBuffer();
                 fs.Write(data, 0, data.Length);
             }
         }

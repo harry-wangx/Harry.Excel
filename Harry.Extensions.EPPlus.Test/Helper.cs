@@ -19,5 +19,15 @@ namespace Harry.Excel
 
             return dt;
         }
+
+        public static List<Person> GetPersons()
+        {
+            List<Person> results = new List<Person>();
+
+            results.Add(new Person() { Id = 1, Name = "张三", Birthday = new DateTime(1988, 5, 7) });
+            results.Add(new Person() { Id = 2, Name = "李四", Birthday = new DateTime(1992, 6, 8) });
+
+            return results;
+        }
     }
 }
